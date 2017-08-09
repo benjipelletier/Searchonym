@@ -1,0 +1,14 @@
+{
+  "manifest_version": 2,
+
+  "name": "Searchonym",
+  "description": "This extension searches through a page for all relevant synonyms of a given word.",
+  "version": "1.0",
+
+  "browser_action": {
+   "default_icon": "icon.png",
+   "default_popup": "popup.html"
+  },
+  "permissions": [
+   ]
+}
