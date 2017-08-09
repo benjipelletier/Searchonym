@@ -1,7 +1,3 @@
-var wordClass = 'wow';
-var synonymClass = 'lol';
-
-
 //The following functions parses through an html and updates the dom for the search results
 
 var replaceTextWithTag = function( text , word , className ) {
@@ -32,9 +28,9 @@ var replaceWordInElement = function( element , word , className ) {
     return newElement;
 }
     
-var getSearchWord = function( word , wordClass ) {
+var getSearchWord = function( word , wordClass , documentElement ) {
     if( word ) {
-        var allElements = document.getElementsByTagName('*');
+        var allElements = documentElement.getElementsByTagName('*');
         state.counter = allElements.length;
         for ( var element = 0; element < state.counter; element++ ) {
 
@@ -51,33 +47,42 @@ var getSearchWord = function( word , wordClass ) {
                         }
                     }
                 }
-            }
-            
+            }  
         }
     }
 }
 
-var reset = function(){
+var resetSearch = function(){
     state.counter = 0;
-    document.getElementsByTagName('html')[0].innerHTML = state.pageState;
+    state.documentElement.getElementsByTagName('html')[0].innerHTML = state.pageState;
 }
-    
+  
 var state = {
+    documentElement: '',
     counter: 0,
-    pageState: ''
+    pageState: '',
+    wordClass: '',
+    synonymClass: ''
 };
+
+var setSearch = function( documentElement , wordClass , synonymClass ) {
+    state.pageState = documentElement.getElementsByTagName('html')[0].innerHTML;
+    state.wordClass = wordClass;
+    state.synonymClass = synonymClass;
+    state.documentElement = documentElement;
+} 
 
 var getSearchonym = function( arrayWords , callback ) {
     
     //Reset the previous state of the page
-    reset();
+    resetSearch();
  
     // Hightlights the main word 
-    getSearchWord( arrayWords[0] , wordClass);
+    getSearchWord( arrayWords[0] , state.wordClass , state.documentElement );
     
     //Highlights all the synonyms
     for( var word = 1; word < arrayWords.length; word++ ) {
-        getSearchWord( arrayWords[word] , synonymClass);
+        getSearchWord( arrayWords[word] , state.synonymClass , state.documentElement );
     }
 
     //Call the callback 
@@ -86,11 +91,22 @@ var getSearchonym = function( arrayWords , callback ) {
 }
 
 
+/*
+setSearch( html_document , name_of_class_for_main_word , name_of_class_for_all_synonyms );
+Use this function before calling getSearchonyms to set parameters for the documents and stylings for highlights 
+Call setSearch only after the DOM is loaded completely
+
+getSearchonyms( [ main_word , synonyms...] , callback );
+parses through the html and highlights the words and the searchonyms depending on the styles defined by the css 
+calls the callback as soon as highlighting is completed 
+
+Example:
 
 window.addEventListener("DOMContentLoaded", function() {
-    state.pageState = document.getElementsByTagName('html')[0].innerHTML;
-    getSearchonym(['lol','lo','add'], function(){
+    setSearch(document,'lol','wow');
+    getSearchonym(['lol','div','add'] ,function(){
         console.log('Done');
     });
 }, false);
 
+*/
