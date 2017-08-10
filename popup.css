@@ -1,0 +1,33 @@
+body {
+    background-color: firebrick;
+    color: white;
+    padding: 0;
+    margin: 0;
+}
+
+header {
+    background-color: teal;
+    width: 100%;
+}
+
+#search-container {
+    width: 250px;
+}
+
+#search-bar {
+    width: 200px;
+    outline: none;
+    border: none;
+    font-size: 2em;
+}
+
+#submit-button {
+    border: none;
+    border-radius: 0;
+    outline: none;
+    height: 2em;
+}
+
+#submit-button:active {
+    background-color: gray;
+}
