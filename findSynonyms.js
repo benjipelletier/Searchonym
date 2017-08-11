@@ -86,7 +86,7 @@ var getSearchonym = function( arrayWords , callback ) {
     }
 
     //Call the callback 
-    callback();
+    callback(state.documentElement);
     
 }
 
