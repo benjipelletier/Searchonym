@@ -1,11 +1,14 @@
 chrome.runtime.onMessage.addListener(function(response, sender, sendResponse) {
     var parser = new DOMParser()
     var doc = parser.parseFromString(response, "text/html");
-    alert(doc);
+    //alert(doc);
     setSearch(doc, "white", "black");
-    getSearchonym(["and"], function(response) {
-        alert(response);
-        console.log('zing zinf');
+    getSearchonym(["and", "youtube"], function(newDoc) {
+
+        sendResponse({
+            documentResponse: newDoc.getElementsByTagName('body')[0].outerHTML
+        });
+        return true;
     })
 });
 
@@ -15,12 +18,10 @@ chrome.runtime.onMessage.addListener(function(response, sender, sendResponse) {
 var replaceTextWithTag = function( text , word , className ) {
     var allLocations = text.split(new RegExp(word,'gi'));
     var allWords = text.match(new RegExp(word,'gi')); 
-    alert(allLocations);
     if(allLocations.length > 1){
         var highlightedText = allLocations[0];
         for(var index = 1; index < allLocations.length ; index ++ ) {
-            highlightedText += '<span class=' + className + '>' + allWords[index-1] + '</span>' + allLocations[index];
-            console.log(highlightedText);
+            highlightedText += "<span class='" + className + "'>" + allWords[index-1] + '</span>' + allLocations[index];
             state.counter += 1;
         }
         return highlightedText;
@@ -68,7 +69,7 @@ var getSearchWord = function( word , wordClass , documentElement ) {
 
 var resetSearch = function(){
     state.counter = 0;
-    //state.documentElement.getElementsByTagName('body')[0] = state.pageState;
+    state.documentElement.getElementsByTagName('body')[0] = state.pageState;
 }
   
 var state = {
