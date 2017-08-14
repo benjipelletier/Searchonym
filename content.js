@@ -1,1 +1,1 @@
-chrome.runtime.sendMessage(document.getElementsByTagName('html')[0].outerHTML);
+chrome.runtime.sendMessage(document.getElementsByTagName('body')[0].outerHTML);
