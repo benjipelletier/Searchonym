@@ -3,8 +3,9 @@ chrome.runtime.onMessage.addListener(function(response, sender, sendResponse) {
     var doc = parser.parseFromString(response, "text/html");
     alert(doc);
     setSearch(doc, "white", "black");
-    getSearchonym(["lol"], function(response) {
+    getSearchonym(["and"], function(response) {
         alert(response);
+        console.log('zing zinf');
     })
 });
 
@@ -14,11 +15,12 @@ chrome.runtime.onMessage.addListener(function(response, sender, sendResponse) {
 var replaceTextWithTag = function( text , word , className ) {
     var allLocations = text.split(new RegExp(word,'gi'));
     var allWords = text.match(new RegExp(word,'gi')); 
-    
+    alert(allLocations);
     if(allLocations.length > 1){
         var highlightedText = allLocations[0];
         for(var index = 1; index < allLocations.length ; index ++ ) {
             highlightedText += '<span class=' + className + '>' + allWords[index-1] + '</span>' + allLocations[index];
+            console.log(highlightedText);
             state.counter += 1;
         }
         return highlightedText;
@@ -41,25 +43,25 @@ var replaceWordInElement = function( element , word , className ) {
     
 var getSearchWord = function( word , wordClass , documentElement ) {
     if(word) {
-        alert(typeof documentElement);
         var allElements = documentElement.getElementsByTagName('*');
         state.counter = allElements.length;
-        alert(JSON.stringify(allElements));
         for (var element = 0; element < state.counter; element++) {
-            if (allElements[element].childElementCount === 0 && allElements[element].innerText !== "" && allElements[element].className !== wordClass) {
-                if (allElements[element].innerText.search(new RegExp(word,'gi')) !== -1){
-                    allElements[element].innerHTML = replaceWordInElement(allElements[element],word,wordClass);
-                }
-            } else if (allElements[element].childElementCount !== 0 && allElements[element].innerText !== "" && allElements[element].className !== wordClass) {
-                
-                for (child in allElements[element].childNodes) {
-                    if (allElements[element].childNodes[child].nodeName === '#text') {
-                        if (allElements[element].childNodes[child].nodeValue.search(new RegExp(word,'gi')) !== -1 ) {
-                            allElements[element].innerHTML = replaceWordInElement(allElements[element],word,wordClass);
+            if(allElements[element]){
+                if (allElements[element].childElementCount === 0 && allElements[element].innerText !== undefined && allElements[element].innerText !== "" && allElements[element].className !== wordClass) {
+                    if (allElements[element].innerText.search(new RegExp(word,'gi')) !== -1){
+                        allElements[element].innerHTML = replaceWordInElement(allElements[element],word,wordClass);
+                    }
+                } else if (allElements[element].childElementCount !== 0 && allElements[element].innerText !== "" && allElements[element].className !== wordClass) {
+                    
+                    for (child in allElements[element].childNodes) {
+                        if (allElements[element].childNodes[child].nodeName === '#text') {
+                            if (allElements[element].childNodes[child].nodeValue.search(new RegExp(word,'gi')) !== -1 ) {
+                                allElements[element].innerHTML = replaceWordInElement(allElements[element],word,wordClass);
+                            }
                         }
                     }
-                }
-            }  
+                }  
+            }
         }
     }
 }
