@@ -2,8 +2,8 @@ chrome.runtime.onMessage.addListener(function(response, sender, sendResponse) {
     if(response && response.sender === 'content'){
         var parser = new DOMParser()
         var doc = parser.parseFromString(response.documentData, "text/html");
-        // Modifications required to look for synonyms from the api and changing the css styling (Also remove style property from line 25 for debugging)
-        setSearch(doc, "white", "black");
+        // Modifications required to look for synonyms from the api
+        setSearch(doc, response.mainWordClass, response.synonymWordClass, response.universalWordClass);
         getSearchonym([response.searchWord], function(newDoc) {
             sendResponse({
                 sender: 'background',
@@ -28,7 +28,7 @@ var replaceTextWithTag = function( text , word , className ) {
     if(allLocations.length > 1){
         var highlightedText = allLocations[0];
         for(var index = 1; index < allLocations.length ; index ++ ) {
-            highlightedText += "<span style='background:red;' class='" + className + "'>" + allWords[index-1] + '</span>' + allLocations[index];
+            highlightedText += "<span class='" + className + "'>" + allWords[index-1] + '</span>' + allLocations[index];
             state.counter += 1;
         }
         return highlightedText;
@@ -79,24 +79,24 @@ var state = {
     counter: 0,
     wordClass: '',
     synonymClass: '',
-    isInit: false
+    universalClass: ''
 };
 
-var setSearch = function( documentElement , wordClass , synonymClass ) {
+var setSearch = function( documentElement , wordClass , synonymClass , universalClass ) {
     state.wordClass = wordClass;
     state.synonymClass = synonymClass;
     state.documentElement = documentElement;
-    state.isInit = true;
+    state.universalClass = universalClass;
 } 
 
 var getSearchonym = function( arrayWords , callback ) {
     
     // Hightlights the main word 
-    getSearchWord( arrayWords[0] , state.wordClass , state.documentElement );
+    getSearchWord( arrayWords[0] , state.universalClass + ' ' + state.wordClass , state.documentElement );
     
     //Highlights all the synonyms
     for(var word = 1; word < arrayWords.length; word++ ) {
-        getSearchWord( arrayWords[word] , state.synonymClass , state.documentElement );
+        getSearchWord( arrayWords[word] , state.universalClass + ' ' + state.synonymClass , state.documentElement );
     }
 
     //Call the callback 
