@@ -1,15 +1,22 @@
 chrome.runtime.onMessage.addListener(function(response, sender, sendResponse) {
-    var parser = new DOMParser()
-    var doc = parser.parseFromString(response, "text/html");
-    //alert(doc);
-    setSearch(doc, "white", "black");
-    getSearchonym(["and", "youtube"], function(newDoc) {
-
+    if(response && response.sender === 'content'){
+        var parser = new DOMParser()
+        var doc = parser.parseFromString(response.documentData, "text/html");
+        // Modifications required to look for synonyms from the api and changing the css styling (Also remove style property from line 25 for debugging)
+        setSearch(doc, "white", "black");
+        getSearchonym([response.searchWord], function(newDoc) {
+            sendResponse({
+                sender: 'background',
+                documentResponse: newDoc.getElementsByTagName('body')[0].outerHTML,
+                err: false
+            });
+        })
+    }else{
         sendResponse({
-            documentResponse: newDoc.getElementsByTagName('body')[0].outerHTML
+            err: true,
+            errMessage: 'Empty dom element from content.'
         });
-        return true;
-    })
+    }
 });
 
 
@@ -21,7 +28,7 @@ var replaceTextWithTag = function( text , word , className ) {
     if(allLocations.length > 1){
         var highlightedText = allLocations[0];
         for(var index = 1; index < allLocations.length ; index ++ ) {
-            highlightedText += "<span class='" + className + "'>" + allWords[index-1] + '</span>' + allLocations[index];
+            highlightedText += "<span style='background:red;' class='" + className + "'>" + allWords[index-1] + '</span>' + allLocations[index];
             state.counter += 1;
         }
         return highlightedText;
@@ -66,32 +73,24 @@ var getSearchWord = function( word , wordClass , documentElement ) {
         }
     }
 }
-
-var resetSearch = function(){
-    state.counter = 0;
-    state.documentElement.getElementsByTagName('body')[0] = state.pageState;
-}
   
 var state = {
     documentElement: '',
     counter: 0,
-    pageState: '',
     wordClass: '',
-    synonymClass: ''
+    synonymClass: '',
+    isInit: false
 };
 
 var setSearch = function( documentElement , wordClass , synonymClass ) {
-    state.pageState = documentElement;
     state.wordClass = wordClass;
     state.synonymClass = synonymClass;
     state.documentElement = documentElement;
+    state.isInit = true;
 } 
 
 var getSearchonym = function( arrayWords , callback ) {
     
-    //Reset the previous state of the page
-    resetSearch();
- 
     // Hightlights the main word 
     getSearchWord( arrayWords[0] , state.wordClass , state.documentElement );
     
