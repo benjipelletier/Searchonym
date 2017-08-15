@@ -1,6 +1,15 @@
+var stripString = function(string){ 
+    return (string||'').replace( /^\s+|\s+$/g,''); 
+};
+var isValidSearch = function(string){
+    return !/[~`!#$%\^&*+=[\]\\';,/{}|\\":<>\?]/g.test(string);
+}
+
 var initSearchonym = function(tab){
-    popupState.searchWord = document.getElementById("search-bar").value;
-    updateDom(popupState.searchWord);
+    popupState.searchWord = stripString(document.getElementById("search-bar").value);
+    if(popupState.searchWord.length > 1 && isValidSearch(popupState.searchWord)){
+        updateDom(popupState.searchWord);
+    }
 }
 
 var updateDom = function(searchWord){
