@@ -5,7 +5,7 @@ chrome.runtime.onMessage.addListener(function (response, sender, sendResponse) {
         // Modifications required to look for synonyms from the api
         setSearch(doc, response.mainWordClass, response.synonymWordClass, response.universalWordClass);
         request(response.searchWord, function (synonymList) {
-            getSearchonym(synonymList, function (newDoc) {
+            getSearchonym(synonymList, function (newDoc,synonymList) {
                 sendResponse({
                     sender: 'background',
                     documentResponse: newDoc.getElementsByTagName('body')[0].outerHTML,
@@ -20,22 +20,23 @@ chrome.runtime.onMessage.addListener(function (response, sender, sendResponse) {
             errMessage: 'Empty dom element from content.'
         });
     }
+    return true;
 });
 
 
 var request = function (search, callback) {
     var xhttp = new XMLHttpRequest();
     var key = 'c00a40ffd5c80a888434113afc8ccdf8';
-    xhttp.onreadystatechange = function () {
-        var synonyms = [search];
-        if (this.readyState === 4 && this.status === 200) {
+    var synonyms = [search];
+    xhttp.onload = function () {
+        if (this.readyState !== XMLHttpRequest.LOADING && this.readyState === XMLHttpRequest.DONE && this.status === 200) {
             var response = JSON.parse(this.responseText);
             var keys = Object.keys(response);
             for (var i = 0; i < keys.length; i++) {
                 synonyms = synonyms.concat(response[keys[i]].syn);
             }
         }
-        return callback(synonyms);
+        callback(synonyms);     
     };
     xhttp.open('GET', 'http://words.bighugelabs.com/api/2/' + key + '/' + search + '/json');
     xhttp.send();
@@ -121,8 +122,7 @@ var getSearchonym = function (arrayWords, callback) {
     }
 
     //Call the callback 
-    callback(state.documentElement);
-
+    callback(state.documentElement,arrayWords);
 }
 
 

@@ -1,5 +1,3 @@
-var synonymList = [];
-
 var loadNewDom = function(searchWord){
     
     var sendingData = {
@@ -17,8 +15,8 @@ var loadNewDom = function(searchWord){
             var doc = parser.parseFromString(response.documentResponse, "text/html");
             document.getElementsByTagName('body')[0].outerHTML = doc.getElementsByTagName('body')[0].outerHTML;
             addCSSStyling();
-            synonymList = response.synonyms;
-        }else if(response.err){
+            currentPageState.synonymList = response.synonyms;
+        }else if(response && response.err){
             console.log(response.errMessage);
         }
     });
@@ -73,7 +71,7 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
     if(request.sender === 'popup'){
         if(request.command === 'updateWord'){
             loadNewDom(request.searchWord);
-            sendResponse({ err: false, synonyms: synonymList});
+            sendResponse({ err: false, synonyms: currentPageState.synonymList});
         }else if(request.command === 'shiftFocus'){
             updateFocus();
         }
@@ -98,7 +96,8 @@ var currentPageState = {
     synonymWordClass: 'black',
     universalWordClass: 'grey',
     elementIndex: 0,
-    numberOfHighlights: 0
+    numberOfHighlights: 0,
+    synonymList: []
 };
 
 /*

@@ -44,6 +44,7 @@ var popupState = {
 }
 
 window.addEventListener("DOMContentLoaded", function() {
+    document.getElementById("search-bar").focus();
     document.getElementById("search-button").addEventListener("click", initSearchonym);
     document.getElementById("search-bar").addEventListener("keyup", function(event) {
         event.preventDefault();
