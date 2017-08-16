@@ -15,6 +15,7 @@ var updateDom = function(searchWord){
                 console.log(reponse.errMessage);
             }else{
                 // On pressing enter , change focus will be called after dom has been updated
+                document.getElementById("list-container").innerHTML = response.synonyms.length;
                 popupState.enterFunction = changeFocus;
             }
         });  

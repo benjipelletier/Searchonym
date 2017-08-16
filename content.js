@@ -1,3 +1,5 @@
+var synonymList = [];
+
 var loadNewDom = function(searchWord){
     
     var sendingData = {
@@ -10,11 +12,12 @@ var loadNewDom = function(searchWord){
     }
 
     chrome.runtime.sendMessage(sendingData,function(response){
-        if(response && response.sender==='background' && !response.err){
+        if (response && response.sender==='background' && !response.err){
             var parser = new DOMParser();
             var doc = parser.parseFromString(response.documentResponse, "text/html");
             document.getElementsByTagName('body')[0].outerHTML = doc.getElementsByTagName('body')[0].outerHTML;
             addCSSStyling();
+            synonymList = response.synonyms;
         }else if(response.err){
             console.log(response.errMessage);
         }
@@ -70,7 +73,7 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
     if(request.sender === 'popup'){
         if(request.command === 'updateWord'){
             loadNewDom(request.searchWord);
-            sendResponse({ err: false });
+            sendResponse({ err: false, synonyms: synonymList});
         }else if(request.command === 'shiftFocus'){
             updateFocus();
         }

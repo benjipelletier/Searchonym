@@ -28,7 +28,7 @@ h1 {
 #search-container {
     width: 250px;
     display: flex;
-    margin: 50px 20px 10px 20px ;
+    margin: 20px 20px 20px 20px ;
     align-items: center;
 }
 
@@ -54,7 +54,7 @@ h1 {
     border: none;
     border-radius: 0;
     outline: none;
-    width: 50px;
+    width: 70px;
     height:69px;
     font-family: 'Cairo', sans-serif;
     display: inline-block;
