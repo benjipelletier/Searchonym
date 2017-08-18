@@ -71,3 +71,10 @@ h1 {
 #search-button:active {
     background-color: gray;
 }
+
+#up,#down {
+    height: 100px;
+    width: 100px;
+    background: black;
+    color: white;
+}

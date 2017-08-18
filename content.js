@@ -53,13 +53,20 @@ var scrollIntoElement = function(element){
 
 
 // Updates the highlight to the next word 
-var updateFocus = function(){
-    if(currentPageState.numberOfHighlights > 0){
+var updateFocus = function(direction){
+    if(currentPageState.numberOfHighlights > 0 && direction){
         var currentElement = document.getElementsByClassName(currentPageState.universalWordClass)[currentPageState.elementIndex];
         currentElement.style.backgroundColor = currentElement.classList.contains(currentPageState.mainWordClass)?cssProperties.mainWordColor:cssProperties.synonymColor;
-        currentPageState.elementIndex += 1;
-        if(currentPageState.elementIndex >= currentPageState.numberOfHighlights){
-            currentPageState.elementIndex = 0;    
+        if(direction==='down'){
+            currentPageState.elementIndex += 1;
+            if(currentPageState.elementIndex >= currentPageState.numberOfHighlights){
+                currentPageState.elementIndex = 0;    
+            }
+        }else if(direction==='up'){
+            currentPageState.elementIndex -= 1;
+            if(currentPageState.elementIndex === -1){
+                currentPageState.elementIndex = currentPageState.numberOfHighlights-1;    
+            }
         }
         document.getElementsByClassName(currentPageState.universalWordClass)[currentPageState.elementIndex].style.backgroundColor = cssProperties.currentElementColor;
         scrollIntoElement(document.getElementsByClassName(currentPageState.universalWordClass)[currentPageState.elementIndex]);
@@ -72,8 +79,8 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
         if(request.command === 'updateWord'){
             loadNewDom(request.searchWord);
             sendResponse({ err: false, synonyms: currentPageState.synonymList});
-        }else if(request.command === 'shiftFocus'){
-            updateFocus();
+        }else if(request.command === 'shiftFocus' && request.direction){
+            updateFocus(request.direction);
         }
     }else{
         sendResponse({ 

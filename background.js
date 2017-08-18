@@ -50,7 +50,7 @@ var replaceTextWithTag = function (text, word, className) {
     if (allLocations.length > 1) {
         var highlightedText = allLocations[0];
         for (var index = 1; index < allLocations.length; index++) {
-            highlightedText += "<span class='" + className + "'>" + allWords[index - 1] + '</span>' + allLocations[index];
+            highlightedText += "<span style='display:block;float:left;' class='" + className + "'>" + allWords[index - 1] + '</span>' + allLocations[index];
             state.counter += 1;
         }
         return highlightedText;

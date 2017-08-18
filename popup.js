@@ -2,7 +2,7 @@ var stripString = function(string){
     return (string||'').replace( /^\s+|\s+$/g,''); 
 };
 var isValidSearch = function(string){
-    return !/[~`!#$%\^&*+=[\]\\';,/{}|\\":<>\?]/g.test(string);
+    return !/[~`!#$%\^&*+=[\]\\;,/{}|\\":<>\?]/g.test(string);
 }
 
 var initSearchonym = function(tab){
@@ -31,14 +31,15 @@ var updateDom = function(searchWord){
     });
 };
 
-var changeFocus = function(){
+var changeFocus = function(direction){
     chrome.tabs.query({active: true, currentWindow: true}, function(tabs){
         var sendingData = {
             sender: 'popup',
-            command: 'shiftFocus'
-        }
+            command: 'shiftFocus',
+            direction: direction
+        };
         chrome.tabs.sendMessage(tabs[0].id, sendingData, function(response) {
-            if(response.err){
+            if(response && response.err){
                 console.log(reponse.errMessage);
             }
         });  
@@ -55,10 +56,20 @@ var popupState = {
 window.addEventListener("DOMContentLoaded", function() {
     document.getElementById("search-bar").focus();
     document.getElementById("search-button").addEventListener("click", initSearchonym);
+    document.getElementById("up").addEventListener("click", changeFocus('up'));
+    document.getElementById("down").addEventListener("click", changeFocus('down'));
     document.getElementById("search-bar").addEventListener("keyup", function(event) {
         event.preventDefault();
         if (event.keyCode == 13) {
-            popupState.enterFunction();
+            if(popupState.enterFunction === initSearchonym){
+                popupState.enterFunction();
+            }else{
+                popupState.enterFunction('down');
+            }
+        }else if (event.keyCode == 38) {
+            changeFocus('up');
+        }else if (event.keyCode == 40) {
+            changeFocus('down');
         }
 
         if(document.getElementById("search-bar").value !== popupState.searchWord) {
