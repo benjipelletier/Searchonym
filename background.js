@@ -1,5 +1,21 @@
 chrome.runtime.onMessage.addListener(function (response, sender, sendResponse) {
     if (response && response.sender === 'content') {
+        sendResponse({
+            sender: 'background',
+            word: "lol",
+            synonyms: [ "cool", "no"],
+            err: false
+        });
+    } else {
+        sendResponse({
+            err: true,
+            errMessage: 'Empty dom element from content.'
+        });
+    }
+    return true;
+});
+
+        /*
         var parser = new DOMParser()
         var doc = parser.parseFromString(response.documentData, "text/html");
         // Modifications required to look for synonyms from the api
@@ -124,7 +140,7 @@ var getSearchonym = function (arrayWords, callback) {
     //Call the callback 
     callback(state.documentElement,arrayWords);
 }
-
+*/
 
 /*
 setSearch( html_document , name_of_class_for_main_word , name_of_class_for_all_synonyms );

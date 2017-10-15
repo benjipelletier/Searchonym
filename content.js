@@ -1,5 +1,5 @@
 var loadNewDom = function(searchWord){
-    
+    alert("loaded new dom")
     var sendingData = {
         documentData : currentPageState.html,
         searchWord: searchWord,
@@ -11,6 +11,13 @@ var loadNewDom = function(searchWord){
 
     chrome.runtime.sendMessage(sendingData,function(response){
         if (response && response.sender==='background' && !response.err){
+            alert("responsee " + JSON.stringify(response));
+            searchDOM(response.word, "original");
+            response.synonyms.forEach(function(word) {
+                searchDOM(word);
+            });
+        }
+            /*
             var parser = new DOMParser();
             var doc = parser.parseFromString(response.documentResponse, "text/html");
             document.getElementsByTagName('body')[0].outerHTML = doc.getElementsByTagName('body')[0].outerHTML;
@@ -18,9 +25,27 @@ var loadNewDom = function(searchWord){
             currentPageState.synonymList = response.synonyms;
         }else if(response && response.err){
             console.log(response.errMessage);
-        }
+        }*/
     });
 };
+
+function searchDOM(text, type = "syn") {
+    if (window.find && window.getSelection) {
+        document.designMode = "on";
+        var sel = window.getSelection();
+        sel.collapse(document.body, 0);
+        //document.execCommand("styleWithCSS", true, null);
+        while (window.find(text)) {
+            document.execCommand("HiliteColor", false, type == "syn" ? "orange" : "yellow");
+            sel.collapseToEnd();
+
+        }
+        document.designMode = "off";
+    }
+    // Use HiliteColor since some browsers apply BackColor to the whole block
+    
+}
+
 
 
 // Sets the initial styling for the mainWords, synonnyms and the highlights the first word

@@ -62,7 +62,7 @@ window.addEventListener("DOMContentLoaded", function() {
         event.preventDefault();
         if (event.keyCode == 13) {
             if(popupState.enterFunction === initSearchonym){
-                popupState.enterFunction();
+                //popupState.enterFunction();
             }else{
                 popupState.enterFunction('down');
             }
