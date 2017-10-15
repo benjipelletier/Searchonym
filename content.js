@@ -44,28 +44,7 @@ function searchDOM(text, type = "syn") {
     
 }
 
-
-
-// Sets the initial styling for the mainWords, synonnyms and the highlights the first word
-var addCSSStyling = function(){
-
-    var allMainWords = document.getElementsByClassName(currentPageState.mainWordClass);
-    for(var index=0;index<allMainWords.length;index++){
-        allMainWords[index].style.backgroundColor = cssProperties.mainWordColor;
-    }
-
-    var allSynonymWords = document.getElementsByClassName(currentPageState.synonymWordClass);
-    for(var index=0;index<allSynonymWords.length;index++){
-        allSynonymWords[index].style.backgroundColor = cssProperties.synonymColor;
-    }
-
-    currentPageState.numberOfHighlights = document.getElementsByClassName(currentPageState.universalWordClass).length;
-    currentPageState.elementIndex = 0;
-    document.getElementsByClassName(currentPageState.universalWordClass)[currentPageState.elementIndex].style.backgroundColor = cssProperties.currentElementColor;
-    scrollIntoElement(document.getElementsByClassName(currentPageState.universalWordClass)[currentPageState.elementIndex]);
-
-}
-
+/*
 // Scrolls to the current highlighted element
 var scrollIntoElement = function(element){
     Element.prototype.documentTop = function () {
@@ -73,37 +52,13 @@ var scrollIntoElement = function(element){
     };
     window.scrollTo( 0 , element.documentTop() - ( window.innerHeight / 2 ) );
 }
-
-
-// Updates the highlight to the next word 
-var updateFocus = function(direction){
-    if(currentPageState.numberOfHighlights > 0 && direction){
-        var currentElement = document.getElementsByClassName(currentPageState.universalWordClass)[currentPageState.elementIndex];
-        currentElement.style.backgroundColor = currentElement.classList.contains(currentPageState.mainWordClass)?cssProperties.mainWordColor:cssProperties.synonymColor;
-        if(direction==='down'){
-            currentPageState.elementIndex += 1;
-            if(currentPageState.elementIndex >= currentPageState.numberOfHighlights){
-                currentPageState.elementIndex = 0;    
-            }
-        }else if(direction==='up'){
-            currentPageState.elementIndex -= 1;
-            if(currentPageState.elementIndex === -1){
-                currentPageState.elementIndex = currentPageState.numberOfHighlights-1;    
-            }
-        }
-        document.getElementsByClassName(currentPageState.universalWordClass)[currentPageState.elementIndex].style.backgroundColor = cssProperties.currentElementColor;
-        scrollIntoElement(document.getElementsByClassName(currentPageState.universalWordClass)[currentPageState.elementIndex]);
-    }    
-}
-
+*/
 
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
-    if(request.sender === 'popup'){
-        if(request.command === 'updateWord'){
+    if (request.sender === 'popup'){
+        if (request.command === 'updateWord'){
             loadNewDom(request.searchWord, request.removeFormat);
             sendResponse({err: false});
-        }else if(request.command === 'shiftFocus' && request.direction){
-            updateFocus(request.direction);
         }
     }else{
         sendResponse({ 
@@ -112,22 +67,3 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
         });        
     }
 });
-
-
-
-/*
-MainWordClass : name of the searched word
-SynonymWordClass: names of the synonyms
-UniversalWordClass: All words combined
-*/
-/*
-currentElementColor: color of the highlighted element
-mainWordColor: color of the main word
-synonymColor: color of the synonym
-*/
-var cssProperties = {
-    currentElementColor : 'yellow',
-    mainWordColor: 'green',
-    synonymColor: 'red'
-}
-
