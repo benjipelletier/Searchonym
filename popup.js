@@ -20,12 +20,18 @@ window.addEventListener("DOMContentLoaded", function() {
     document.getElementById("search-button").addEventListener("click", function(event) {
         if (document.getElementById("search-bar").value != '') {
             updateDom(document.getElementById("search-bar").value);
+            document.getElementById("remove-button").style.display = "unset";
         }
     });
     document.getElementById("search-bar").addEventListener("keyup", function(event) {
         event.preventDefault();
         if (event.keyCode == 13 && document.getElementById("search-bar").value != '') {
             updateDom(document.getElementById("search-bar").value);
+            document.getElementById("remove-button").style.display = "unset";
         }
+    });
+    document.getElementById("remove-button").addEventListener("click", function(event) {
+        updateDom("");
+        document.getElementById("remove-button").style.display = "none";
     });
 });
