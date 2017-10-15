@@ -1,16 +1,11 @@
 var loadNewDom = function(searchWord, removeFormat){
     var sendingData = {
-        documentData : currentPageState.html,
         searchWord: searchWord,
-        sender: 'content',
-        mainWordClass: currentPageState.mainWordClass,
-        synonymWordClass: currentPageState.synonymWordClass,
-        universalWordClass: currentPageState.universalWordClass
+        sender: 'content'
     }
 
     chrome.runtime.sendMessage(sendingData,function(response){
         if (response && response.sender === 'background' && !response.err){
-            alert(removeFormat)
             document.designMode = "on";
             document.execCommand("SelectAll", false, null);
             document.execCommand("RemoveFormat", false, null);
@@ -106,7 +101,7 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
     if(request.sender === 'popup'){
         if(request.command === 'updateWord'){
             loadNewDom(request.searchWord, request.removeFormat);
-            sendResponse({ err: false, synonyms: currentPageState.synonymList});
+            sendResponse({err: false});
         }else if(request.command === 'shiftFocus' && request.direction){
             updateFocus(request.direction);
         }
@@ -125,16 +120,6 @@ MainWordClass : name of the searched word
 SynonymWordClass: names of the synonyms
 UniversalWordClass: All words combined
 */
-var currentPageState = {
-    html : document.getElementsByTagName('body')[0].outerHTML,
-    mainWordClass: 'white',
-    synonymWordClass: 'black',
-    universalWordClass: 'grey',
-    elementIndex: 0,
-    numberOfHighlights: 0,
-    synonymList: []
-};
-
 /*
 currentElementColor: color of the highlighted element
 mainWordColor: color of the main word
