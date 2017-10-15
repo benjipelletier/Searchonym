@@ -13,16 +13,18 @@ var initSearchonym = function(tab){
 }
 
 var updateDom = function(searchWord){
+    document.execCommand("RemoveFormat", false, null);
     chrome.tabs.query({active: true, currentWindow: true}, function(tabs){
         var sendingData = {
             sender: 'popup',
             command: 'updateWord',
-            searchWord: searchWord
+            searchWord: searchWord,
+            removeFormat: true
         }
         chrome.tabs.sendMessage(tabs[0].id, sendingData, function(response) {
-            if(response.err){
+            if (response.err) {
                 console.log(reponse.errMessage);
-            }else{
+            } else {
                 // On pressing enter , change focus will be called after dom has been updated
                 document.getElementById("list-container").innerHTML = response.synonyms.length;
                 popupState.enterFunction = changeFocus;
@@ -39,7 +41,7 @@ var changeFocus = function(direction){
             direction: direction
         };
         chrome.tabs.sendMessage(tabs[0].id, sendingData, function(response) {
-            if(response && response.err){
+            if (response && response.err) {
                 console.log(reponse.errMessage);
             }
         });  
@@ -60,21 +62,8 @@ window.addEventListener("DOMContentLoaded", function() {
     document.getElementById("down").addEventListener("click", changeFocus('down'));
     document.getElementById("search-bar").addEventListener("keyup", function(event) {
         event.preventDefault();
-        if (event.keyCode == 13) {
-            if(popupState.enterFunction === initSearchonym){
-                //popupState.enterFunction();
-            }else{
-                popupState.enterFunction('down');
-            }
-        }else if (event.keyCode == 38) {
-            changeFocus('up');
-        }else if (event.keyCode == 40) {
-            changeFocus('down');
-        }
-
-        if(document.getElementById("search-bar").value !== popupState.searchWord) {
-            //If search data is changed then enterFunction is set back to initSearchonym to initialize new search
-            popupState.enterFunction = initSearchonym;
+        if (event.keyCode == 13 && document.getElementById("search-bar").value != '') {
+            updateDom(document.getElementById("search-bar").value);
         }
     });
 });

@@ -1,5 +1,4 @@
-var loadNewDom = function(searchWord){
-    alert("loaded new dom")
+var loadNewDom = function(searchWord, removeFormat){
     var sendingData = {
         documentData : currentPageState.html,
         searchWord: searchWord,
@@ -10,12 +9,16 @@ var loadNewDom = function(searchWord){
     }
 
     chrome.runtime.sendMessage(sendingData,function(response){
-        if (response && response.sender==='background' && !response.err){
-            alert("responsee " + JSON.stringify(response));
-            searchDOM(response.word, "original");
+        if (response && response.sender === 'background' && !response.err){
+            alert(removeFormat)
+            document.designMode = "on";
+            document.execCommand("SelectAll", false, null);
+            document.execCommand("RemoveFormat", false, null);
+            document.designMode = "off";
             response.synonyms.forEach(function(word) {
                 searchDOM(word);
             });
+            searchDOM(response.word, "original");
         }
             /*
             var parser = new DOMParser();
@@ -102,7 +105,7 @@ var updateFocus = function(direction){
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
     if(request.sender === 'popup'){
         if(request.command === 'updateWord'){
-            loadNewDom(request.searchWord);
+            loadNewDom(request.searchWord, request.removeFormat);
             sendResponse({ err: false, synonyms: currentPageState.synonymList});
         }else if(request.command === 'shiftFocus' && request.direction){
             updateFocus(request.direction);
